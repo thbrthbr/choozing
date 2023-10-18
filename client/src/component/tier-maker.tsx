@@ -486,6 +486,8 @@ const Tiermaker = () => {
         {/* <input type="file" onChange={(e: any) => uploadImg(e)} multiple></input> */}
         {/* <button onClick={exportElementAsPNG}>이미지업로드</button> */}
       </$TierContainer>
+      <br></br>
+      <br></br>
     </div>
   );
 };

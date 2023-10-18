@@ -359,9 +359,9 @@ const Ladders = () => {
 
     if (
       startY < 1 ||
-      startY > window.innerHeight - 200 ||
+      startY > window.innerHeight - 250 ||
       endY < 1 ||
-      endY > window.innerHeight - 200
+      endY > window.innerHeight - 250
     ) {
       init();
       drawBridge();

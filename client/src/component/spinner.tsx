@@ -149,7 +149,6 @@ const Spinner = () => {
     if (!mustSpin) {
       const newPrizeNumber = Math.floor(Math.random() * data.length);
       setPrizeNumber(newPrizeNumber);
-      console.log(newPrizeNumber);
       setMustSpin(true);
     }
   };

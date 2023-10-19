@@ -131,7 +131,7 @@ const Tiermaker = () => {
     for (let i = 0; i < tierList.length; i++) {
       if (i !== key) copy.push(tierList[i]);
       else {
-        console.log(tierList[i]);
+        // console.log(tierList[i]);
         for (let j = 0; j < tierList[i].contentArr.length; j++) {
           dyingList.push(tierList[i].contentArr[j].id);
         }
@@ -298,7 +298,7 @@ const Tiermaker = () => {
 
   const dropMobile = (e: any) => {
     if (selectedItem) {
-      console.log('보자고 ', selectedItem);
+      // console.log('보자고 ', selectedItem);
       let newData = tierList.slice(0);
       let set = [];
       let changed = false;
@@ -510,10 +510,10 @@ const Tiermaker = () => {
                       key={i}
                       id={tierList[i].id}
                       onClick={(e) => {
-                        console.log(e.target);
+                        // console.log(e.target);
                       }}
                       onDrop={(e) => {
-                        console.log(e.target);
+                        // console.log(e.target);
                         drop(e);
                       }}
                       onDragOver={(e) => {
@@ -532,13 +532,13 @@ const Tiermaker = () => {
                       onTouchEnd={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        console.log(
-                          '확인',
-                          document.elementFromPoint(
-                            e.changedTouches[0].clientX,
-                            e.changedTouches[0].clientY,
-                          ),
-                        );
+                        // console.log(
+                        //   '확인',
+                        //   document.elementFromPoint(
+                        //     e.changedTouches[0].clientX,
+                        //     e.changedTouches[0].clientY,
+                        //   ),
+                        // );
                         dropMobile(
                           document.elementFromPoint(
                             e.changedTouches[0].clientX,
@@ -578,14 +578,14 @@ const Tiermaker = () => {
                               e.preventDefault();
                             }}
                             onTouchEnd={(e) => {
-                              console.log(selectedItem);
-                              console.log(
-                                '확인',
-                                document.elementFromPoint(
-                                  e.changedTouches[0].clientX,
-                                  e.changedTouches[0].clientY,
-                                ),
-                              );
+                              // console.log(selectedItem);
+                              // console.log(
+                              //   '확인',
+                              //   document.elementFromPoint(
+                              //     e.changedTouches[0].clientX,
+                              //     e.changedTouches[0].clientY,
+                              //   ),
+                              // );
                               e.preventDefault();
                               e.stopPropagation();
                               dropMobile(
@@ -621,7 +621,7 @@ const Tiermaker = () => {
                       setPreviousPlace(e.currentTarget.parentNode.id);
                     }}
                     onDrop={(e) => {
-                      console.log(e.target);
+                      // console.log(e.target);
                       back(e);
                     }}
                     onDragOver={(e) => {
@@ -631,7 +631,7 @@ const Tiermaker = () => {
                     onTouchStart={(e: any) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      console.log('터치');
+                      // console.log('터치');
                       setSelectedItem({ id: x.id, src: x.img });
                       setPreviousPlace(e.currentTarget.parentNode.id);
                     }}
@@ -643,14 +643,14 @@ const Tiermaker = () => {
                       setOffsetY(clientY);
                     }}
                     onTouchEnd={(e) => {
-                      console.log(selectedItem);
-                      console.log(
-                        '확인',
-                        document.elementFromPoint(
-                          e.changedTouches[0].clientX,
-                          e.changedTouches[0].clientY,
-                        ),
-                      );
+                      // console.log(selectedItem);
+                      // console.log(
+                      //   '확인',
+                      //   document.elementFromPoint(
+                      //     e.changedTouches[0].clientX,
+                      //     e.changedTouches[0].clientY,
+                      //   ),
+                      // );
                       e.preventDefault();
                       e.stopPropagation();
                       dropMobile(

@@ -27,6 +27,7 @@ const path = require('path');
 const storage = multer.diskStorage({
   //저장될 경로지정
   destination: (req, file, cb) => {
+    console.log(cb(null, 'public/'));
     cb(null, 'public/');
   },
   //파일 이름 설정

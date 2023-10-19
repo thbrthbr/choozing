@@ -15,6 +15,7 @@ const $MainContainer = styled.div`
 
 const $CustomButton = styled.button`
   font-size: 20px;
+  font-family: 'DNFBitBitv2';
   background-color: transparent;
   border-radius: 10px;
   white-space: nowrap;
@@ -110,17 +111,30 @@ const Picker = () => {
         style={{ width: '50px', margin: '20px 0px 0px 0px' }}
       ></img>
 
-      <div style={{ fontSize: '140px', marginTop: '-40px', height: '170px' }}>
+      <div
+        style={{
+          fontFamily: 'IAMAPLAYER',
+          fontSize: '140px',
+          marginTop: '-10px',
+          height: '170px',
+        }}
+      >
         {theNumber === 10000 ? 0 : theNumber}
       </div>
-      {result}
-      <h2>시작숫자를 넣어주세요</h2>
+      <span style={{ color: 'green', fontFamily: 'Giants-Inline' }}>
+        {result}
+      </span>
+      <h2 style={{ fontFamily: 'HakgyoansimGaeulsopungB' }}>
+        시작숫자를 넣어주세요
+      </h2>
       <$CustomInput
         type="text"
         value={start}
         onChange={(e) => setStart(e.target.value)}
       ></$CustomInput>
-      <h2>끝숫자를 넣어주세요</h2>
+      <h2 style={{ fontFamily: 'HakgyoansimGaeulsopungB' }}>
+        끝숫자를 넣어주세요
+      </h2>
       <$CustomInput
         type="text"
         value={end}

@@ -91,6 +91,11 @@ const $CustomButton = styled.button`
     background-color: #efe9ab;
   }
 `;
+const touchMoveHandler = (moveEvent: TouchEvent) => {
+  if (moveEvent.cancelable) moveEvent.preventDefault();
+};
+
+document.addEventListener('touchmove', touchMoveHandler, { passive: false });
 
 const Tiermaker = () => {
   const colorDatabase = [
@@ -291,6 +296,89 @@ const Tiermaker = () => {
     setPreviousPlace('');
   };
 
+  const dropMobile = (e: any) => {
+    if (selectedItem) {
+      console.log('보자고 ', selectedItem);
+      let newData = tierList.slice(0);
+      let set = [];
+      let changed = false;
+      // let movedOne = selectedItem;
+      for (let i = 0; i < newData.length; i++) {
+        // 드롭하는 티어를 티어리스트에서 고르기
+        if (newData[i].id == e.id) {
+          for (let j = 0; j < newData[i].contentArr.length; j++) {
+            // 같은 티어내에서 빈공간에 두는 제자리 이동
+            if (newData[i].contentArr[j].id == selectedItem.id) return;
+          }
+          let save = [...newData[i].contentArr, selectedItem];
+          let packager = { ...tierList[i], contentArr: save };
+          set.push(packager);
+        } else {
+          // 드롭하는 티어가 아닌 경우
+          // 드롭하는 티어도 아니며 요소 위에다 두는데 그 요소의 부모가 드롭하는 티어의 경우
+          if (e.parentNode.id == newData[i].id) {
+            let flag = true;
+            for (let j = 0; j < newData[i].contentArr.length; j++) {
+              // 같은 티어 내에서 어떠한 요소 위에 두는데 그게 자신이면 제자리 이동 아니면 서로 이동
+              if (newData[i].contentArr[j].id == selectedItem.id) {
+                // 이건 해당 티어에 자신이 존재하는지 찾는 것
+                let cloner = [...newData[i].contentArr];
+                let changer1 = -1;
+                let changer2 = -1;
+                for (let a = 0; a < cloner.length; a++) {
+                  if (cloner[a].id == e.id) changer1 = a;
+                  else if (cloner[a].id == selectedItem.id) changer2 = a;
+                }
+                if (changer1 !== -1 && changer2 !== -1) {
+                  const tmp = cloner[changer1];
+                  cloner[changer1] = cloner[changer2];
+                  cloner[changer2] = tmp;
+                }
+                let packager = { ...tierList[i], contentArr: cloner };
+                set.push(packager);
+                flag = false;
+                changed = true;
+              }
+            }
+            if (flag === true) {
+              let save = [...newData[i].contentArr, selectedItem];
+              let packager = { ...tierList[i], contentArr: save };
+              set.push(packager);
+            }
+          } else {
+            set.push(newData[i]);
+          }
+        }
+      }
+      let bigOne = [];
+      for (let i = 0; i < set.length; i++) {
+        let smallOne = [];
+        for (let j = 0; j < set[i].contentArr.length; j++) {
+          if (
+            set[i].contentArr[j].id == selectedItem.id &&
+            set[i].id == previousPlace &&
+            changed == false
+          ) {
+            continue;
+          } else {
+            smallOne.push(set[i].contentArr[j]);
+          }
+        }
+        bigOne.push({ id: set[i].id, contentArr: smallOne });
+      }
+      let set2 = [];
+      for (let i = 0; i < imgSet.length; i++) {
+        if (imgSet[i].id !== selectedItem.id) {
+          set2.push(imgSet[i]);
+        }
+      }
+      setImgSet(set2);
+      setTierList(bigOne);
+      setSelectedItem('');
+      setPreviousPlace('');
+    }
+  };
+
   // 한 세이브파일로 저장하는 작업
 
   const uploader = async (e: any) => {
@@ -316,6 +404,40 @@ const Tiermaker = () => {
       }),
     );
   };
+  const [offsetX, setOffsetX] = useState(0);
+  const [offsetY, setOffsetY] = useState(0);
+
+  // var keys = { 37: 1, 38: 1, 39: 1, 40: 1 };
+
+  // function preventDefault(e: any) {
+  //   e.preventDefault();
+  // }
+
+  // function preventDefaultForScrollKeys(e: any) {
+  //   preventDefault(e);
+  // }
+
+  // // modern Chrome requires { passive: false } when adding event
+  // var supportsPassive = false;
+
+  // var wheelOpt = supportsPassive ? { passive: false } : false;
+  // var wheelEvent =
+  //   'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel';
+
+  // function disableScroll() {
+  //   window.addEventListener('DOMMouseScroll', preventDefault, false); // older FF
+  //   window.addEventListener(wheelEvent, preventDefault, wheelOpt); // modern desktop
+  //   window.addEventListener('touchmove', preventDefault, wheelOpt); // mobile
+  //   window.addEventListener('keydown', preventDefaultForScrollKeys, false);
+  // }
+
+  // // call this to Enable
+  // function enableScroll() {
+  //   window.removeEventListener('DOMMouseScroll', preventDefault, false);
+  //   window.removeEventListener(wheelEvent, preventDefault, wheelOpt);
+  //   window.removeEventListener('touchmove', preventDefault, wheelOpt);
+  //   window.removeEventListener('keydown', preventDefaultForScrollKeys, false);
+  // }
 
   return (
     <div
@@ -334,7 +456,9 @@ const Tiermaker = () => {
         onChange={uploader}
         multiple
       />
-      <h1 style={{ textAlign: 'center' }}>
+      <h4
+        style={{ textAlign: 'center', fontFamily: 'HakgyoansimGaeulsopungB' }}
+      >
         자신만의 티어표를 만들어보세요{' '}
         <label htmlFor="img-upload" style={{ cursor: 'pointer' }}>
           <FontAwesomeIcon icon={faChartSimple} />
@@ -346,7 +470,7 @@ const Tiermaker = () => {
         >
           샘플보기
         </span>
-      </h1>
+      </h4>
 
       <$TierContainer>
         <$TierSet>
@@ -388,15 +512,39 @@ const Tiermaker = () => {
                       onClick={(e) => {
                         console.log(e.target);
                       }}
-                      onDrop={(e) => drop(e)}
+                      onDrop={(e) => {
+                        console.log(e.target);
+                        drop(e);
+                      }}
                       onDragOver={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                       }}
+                      onTouchStart={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                      }}
+                      onTouchMove={(e) => {
+                        const { clientX, clientY } = e.touches[0];
+                        setOffsetX(clientX);
+                        setOffsetY(clientY);
+                      }}
                       onTouchEnd={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        drop(e);
+                        console.log(
+                          '확인',
+                          document.elementFromPoint(
+                            e.changedTouches[0].clientX,
+                            e.changedTouches[0].clientY,
+                          ),
+                        );
+                        dropMobile(
+                          document.elementFromPoint(
+                            e.changedTouches[0].clientX,
+                            e.changedTouches[0].clientY,
+                          ),
+                        );
                       }}
                     >
                       {x.contentArr.map((itemId: any) => {
@@ -417,11 +565,36 @@ const Tiermaker = () => {
                               setPreviousPlace(e.currentTarget.parentNode.id);
                             }}
                             onTouchStart={(e: any) => {
+                              e.stopPropagation();
+                              e.preventDefault();
                               setSelectedItem({
                                 id: itemId.id,
                                 src: itemId.src,
                               });
                               setPreviousPlace(e.currentTarget.parentNode.id);
+                            }}
+                            onTouchMove={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                            }}
+                            onTouchEnd={(e) => {
+                              console.log(selectedItem);
+                              console.log(
+                                '확인',
+                                document.elementFromPoint(
+                                  e.changedTouches[0].clientX,
+                                  e.changedTouches[0].clientY,
+                                ),
+                              );
+                              e.preventDefault();
+                              e.stopPropagation();
+                              dropMobile(
+                                document.elementFromPoint(
+                                  e.changedTouches[0].clientX,
+                                  e.changedTouches[0].clientY,
+                                ),
+                              );
+                              // back(e);
                             }}
                             onContextMenu={elementSub}
                           ></img>
@@ -447,21 +620,46 @@ const Tiermaker = () => {
                       setSelectedItem({ id: x.id, src: x.img });
                       setPreviousPlace(e.currentTarget.parentNode.id);
                     }}
-                    onTouchStart={(e: any) => {
-                      setSelectedItem({ id: x.id, src: x.img });
-                      setPreviousPlace(e.currentTarget.parentNode.id);
-                    }}
                     onDrop={(e) => {
+                      console.log(e.target);
                       back(e);
                     }}
                     onDragOver={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                     }}
-                    onTouchEnd={(e) => {
+                    onTouchStart={(e: any) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      back(e);
+                      console.log('터치');
+                      setSelectedItem({ id: x.id, src: x.img });
+                      setPreviousPlace(e.currentTarget.parentNode.id);
+                    }}
+                    onTouchMove={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const { clientX, clientY } = e.touches[0];
+                      setOffsetX(clientX);
+                      setOffsetY(clientY);
+                    }}
+                    onTouchEnd={(e) => {
+                      console.log(selectedItem);
+                      console.log(
+                        '확인',
+                        document.elementFromPoint(
+                          e.changedTouches[0].clientX,
+                          e.changedTouches[0].clientY,
+                        ),
+                      );
+                      e.preventDefault();
+                      e.stopPropagation();
+                      dropMobile(
+                        document.elementFromPoint(
+                          e.changedTouches[0].clientX,
+                          e.changedTouches[0].clientY,
+                        ),
+                      );
+                      // back(e);
                     }}
                     draggable
                   ></img>

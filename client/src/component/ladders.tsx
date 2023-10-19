@@ -38,6 +38,7 @@ const $ButtonPlace = styled.div`
 `;
 
 const $CustomButton = styled.button`
+  font-family: 'DNFBitBitv2';
   height: 30px;
   font-size: 15px;
   background-color: transparent;
@@ -67,6 +68,7 @@ const $CustomButton2 = styled.button`
 `;
 
 const $Users = styled.button`
+  /* font-family: 'IAMAPLAYER'; */
   font-size: 20px;
   border-radius: 50%;
   background-color: #fe79d4;
@@ -676,12 +678,15 @@ const Ladders = () => {
       <$UpperPlace>
         <$UpperLeft>
           <label htmlFor="user-count">
-            <h3>참가자는 몇 명?</h3>
+            <h3 style={{ fontFamily: 'HakgyoansimGaeulsopungB' }}>
+              참가자는 몇 명?
+            </h3>
           </label>
           <$UserInput
             type="number"
             id="user-count"
             value={users}
+            style={{ fontFamily: 'IAMAPLAYER' }}
             onChange={(e) => {
               const { value } = e.target;
               if (+value < 0) return;

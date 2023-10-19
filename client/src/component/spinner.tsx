@@ -35,8 +35,10 @@ const $ContainerBox = styled.div`
 `;
 
 const $CustomButton = styled.button`
+  font-family: 'IAMAPLAYER';
+  font-weight: 600;
   width: 70px;
-  font-size: 20px;
+  font-size: 18px;
   background-color: transparent;
   border-radius: 10px;
   white-space: nowrap;
@@ -179,12 +181,12 @@ const Spinner = () => {
       </$Upside>
       <$BottomSide>
         <div>
-          <$CustomButton onClick={spin}>돌리기</$CustomButton>
-          <$CustomButton onClick={add}>추가</$CustomButton>
+          <$CustomButton onClick={spin}>SPIN</$CustomButton>
+          <$CustomButton onClick={add}>ADD</$CustomButton>
         </div>
         <div>
-          <$CustomButton onClick={del}>삭제</$CustomButton>
-          <$CustomButton onClick={reset}>리셋</$CustomButton>
+          <$CustomButton onClick={del}>DEL</$CustomButton>
+          <$CustomButton onClick={reset}>RESET</$CustomButton>
         </div>
       </$BottomSide>
     </$ContainerBox>

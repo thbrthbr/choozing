@@ -22,11 +22,13 @@ const $Logo = styled.div`
   align-items: center;
   text-align: center;
   font-size: 50px;
+  font-family: 'DNFBitBitv2';
 `;
 
 const $LinkStyle = styled(Link)`
   text-decoration: none;
   color: black;
+  font-family: 'iceSotong-Rg';
 `;
 
 const $ContentBox = styled.div`
@@ -43,6 +45,12 @@ const $Content = styled.div`
   border-radius: 5px;
   margin: 10px;
   text-align: center;
+  font-family: 'iceSotong-Rg';
+  box-shadow: 5px 5px 5px 5px gray;
+  &:hover {
+    background-color: #d988b9;
+    transform: scale(1.1);
+  }
 `;
 const $ContentImg = styled.div`
   height: 150px;
@@ -56,6 +64,7 @@ const $ContentImg = styled.div`
 
 const $Name = styled.div`
   text-decoration: none;
+  font-family: 'iceSotong-Rg';
 `;
 
 const Main = () => {

@@ -5,7 +5,7 @@ exports.upload = async (req, res) => {
     for (let i = 0; i < files.length; i++) {
       let obj = {
         img: files[i].filename,
-        id: i + 1,
+        id: Date.now() + i,
       };
       set.push(obj);
     }

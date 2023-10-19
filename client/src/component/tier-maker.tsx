@@ -102,8 +102,6 @@ const Tiermaker = () => {
     'navy',
     'purple',
   ];
-  // const [colorCount, setColorCount] = useState(0);
-  // const [tierNum, setTierNum] = useState(1);
   const [tierList, setTierList] = useState<any>([
     { id: 'new:' + Date.now(), contentArr: [] },
   ]);
@@ -111,11 +109,6 @@ const Tiermaker = () => {
   const [previousPlace, setPreviousPlace] = useState('');
   const [showTest, setShowTest] = useState(false);
   const [testArr, setTestArr] = useState<any>([]);
-  // const [imgSet, setImgSet] = useState<any>(
-  // categoryData.map((x, i) => {
-  //   return { img: x, id: i };
-  // }),
-  // );
   const [imgSet, setImgSet] = useState<any>([]);
 
   const draggingItemIndex = useRef(null);
@@ -182,17 +175,40 @@ const Tiermaker = () => {
     }
 
     setImgSet([{ img: sourceStr, id }, ...imgSet]);
-
     setTierList(save);
   };
 
-  const onDragEnd = (e: any) => {
-    // console.log(e.target);
-  };
+  // const onDragEnd = (e: any) => {
+  //   // console.log(e.target);
+  // };
 
-  const dragEnter = (e: any) => {
-    // console.log(e.currentTarget);
-    // console.log(e.key);
+  // const dragEnter = (e: any) => {
+  //   // console.log(e.currentTarget);
+  //   // console.log(e.key);
+  // };
+
+  const back = (e: any) => {
+    let isExsist = [];
+    for (let i = 0; i < imgSet.length; i++) {
+      isExsist.push(imgSet[i].id);
+    }
+    if (!isExsist.includes(selectedItem.id)) {
+      setImgSet([{ id: selectedItem.id, img: selectedItem.src }, ...imgSet]);
+    }
+    let bigOne = [];
+    let set = tierList.slice(0);
+    for (let i = 0; i < set.length; i++) {
+      let smallOne = [];
+      for (let j = 0; j < set[i].contentArr.length; j++) {
+        if (set[i].contentArr[j].id == selectedItem.id) {
+          continue;
+        } else {
+          smallOne.push(set[i].contentArr[j]);
+        }
+      }
+      bigOne.push({ id: set[i].id, contentArr: smallOne });
+    }
+    setTierList(bigOne);
   };
 
   const drop = (e: any) => {
@@ -238,7 +254,6 @@ const Tiermaker = () => {
             }
           }
           if (flag === true) {
-            console.log('머냐고');
             let save = [...newData[i].contentArr, selectedItem];
             let packager = { ...tierList[i], contentArr: save };
             set.push(packager);
@@ -276,40 +291,13 @@ const Tiermaker = () => {
     setPreviousPlace('');
   };
 
-  const uploadImg = (e: any) => {
-    console.log(e.target.files);
-    let obj = {};
-    let count = 0;
-    let pack: any = [];
-    let limit = e.target.files.length;
-    for (let i = 0; i < e.target.files.length; i++) {
-      let reader = new FileReader();
-      reader.onload = function (e: any) {
-        obj = {
-          id: Date.now(),
-          img: e.target.result,
-        };
-        pack.push(obj);
-        count++;
-        if (count == limit) {
-          setImgSet([...pack, ...imgSet]);
-        }
-      };
-      reader.readAsDataURL(e.target.files[i]);
-    }
-  };
-
   // 한 세이브파일로 저장하는 작업
-  // db 작업
 
-  let db: any = [];
   const uploader = async (e: any) => {
     const formData = new FormData();
     for (let i = 0; i < e.target.files.length; i++) {
       formData.append('img-upload', e.target.files[i]);
     }
-    console.log(formData);
-
     let res = await axios({
       method: 'POST',
       url: 'http://localhost:8000/img_upload',
@@ -318,9 +306,7 @@ const Tiermaker = () => {
         'Content-Type': 'multipart/form-data',
       },
     });
-    console.log(res);
-    db = res.data.data;
-    setImgSet(db);
+    setImgSet([...res.data.data, ...imgSet]);
   };
 
   const sampleShow = () => {
@@ -330,10 +316,6 @@ const Tiermaker = () => {
       }),
     );
   };
-
-  // useEffect(() => {
-  //   setShowTest(true);
-  // }, [testArr]);
 
   return (
     <div
@@ -367,9 +349,6 @@ const Tiermaker = () => {
       </h1>
 
       <$TierContainer>
-        {/* <ul>
-          <li>하하</li>
-        </ul> */}
         <$TierSet>
           <$TierBox>
             <div ref={elementRef}>
@@ -409,12 +388,15 @@ const Tiermaker = () => {
                       onClick={(e) => {
                         console.log(e.target);
                       }}
-                      onDragEnter={(e) => dragEnter(e)}
-                      onDragEnd={onDragEnd}
                       onDrop={(e) => drop(e)}
                       onDragOver={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
+                      }}
+                      onTouchEnd={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        drop(e);
                       }}
                     >
                       {x.contentArr.map((itemId: any) => {
@@ -428,9 +410,13 @@ const Tiermaker = () => {
                               cursor: 'pointer',
                             }}
                             onDragStart={(e: any) => {
-                              console.log(itemId);
-                              console.log(itemId.id);
-                              console.log(itemId.img);
+                              setSelectedItem({
+                                id: itemId.id,
+                                src: itemId.src,
+                              });
+                              setPreviousPlace(e.currentTarget.parentNode.id);
+                            }}
+                            onTouchStart={(e: any) => {
                               setSelectedItem({
                                 id: itemId.id,
                                 src: itemId.src,
@@ -458,11 +444,25 @@ const Tiermaker = () => {
                     }}
                     src={x.img}
                     onDragStart={(e: any) => {
-                      // console.log(e.currentTarget.parentNode);
                       setSelectedItem({ id: x.id, src: x.img });
                       setPreviousPlace(e.currentTarget.parentNode.id);
                     }}
-                    onDragEnter={dragEnter}
+                    onTouchStart={(e: any) => {
+                      setSelectedItem({ id: x.id, src: x.img });
+                      setPreviousPlace(e.currentTarget.parentNode.id);
+                    }}
+                    onDrop={(e) => {
+                      back(e);
+                    }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      back(e);
+                    }}
                     draggable
                   ></img>
                 );
@@ -476,15 +476,6 @@ const Tiermaker = () => {
         <$CustomButton onClick={exportElementAsPNG}>
           <FontAwesomeIcon icon={faSave} />
         </$CustomButton>
-        {/* <button
-          onClick={() => {
-            console.log(imgSet);
-          }}
-        >
-          확인
-        </button> */}
-        {/* <input type="file" onChange={(e: any) => uploadImg(e)} multiple></input> */}
-        {/* <button onClick={exportElementAsPNG}>이미지업로드</button> */}
       </$TierContainer>
       <br></br>
       <br></br>

@@ -39,7 +39,7 @@ const $ButtonPlace = styled.div`
 
 const $CustomButton = styled.button`
   height: 30px;
-  font-size: 20px;
+  font-size: 15px;
   background-color: transparent;
   border-radius: 10px;
   white-space: nowrap;
@@ -97,8 +97,8 @@ const $AddInput = styled.input`
 `;
 
 const $Destination = styled.input`
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
+  /* writing-mode: vertical-rl;
+  text-orientation: mixed; */
   background-color: transparent;
   border: 0px;
   text-align: center;
@@ -140,9 +140,7 @@ const Ladders = () => {
 
   const [ctx, setCtx] = useState<any>();
   const [isDrawing, setIsDrawing] = useState(false);
-
   const [users, setUsers] = useState(DEFAUTL_USERS);
-
   const [data, setData] = useState<any>([]);
   const [bridgeData, setBridgeData] = useState<any>([]);
   const [sortedData, setSortedData] = useState<any>([]);
@@ -205,8 +203,6 @@ const Ladders = () => {
     const canvas: any = canvasRef.current;
     const width = canvas.width;
     const height = canvas.height;
-    console.log(width);
-    console.log(height);
     const _arr = [];
 
     for (let i = 0; i < users; i++) {
@@ -227,7 +223,6 @@ const Ladders = () => {
       limiter[startPosX] = 0;
       _arr.push(arr);
     }
-    console.log(_arr);
     setData(_arr);
   };
 
@@ -313,8 +308,6 @@ const Ladders = () => {
     if (data.length < 1) return;
     setIsDrawing(true);
     const { offsetX, offsetY } = nativeEvent;
-    console.log(offsetX);
-    console.log(offsetY);
     const targetIndex = getTargetIndex(offsetX);
     startTouchPoint.current = { targetIndex, x: offsetX, y: offsetY };
   };
@@ -375,14 +368,12 @@ const Ladders = () => {
     }
 
     if (limiter[startTargetX] >= 3) {
-      console.log(limiter);
       init();
       drawBridge();
       return true;
     }
 
     limiter[startTargetX] += 1;
-    console.log(limiter);
 
     const linkId = new Date().getTime() * Math.random();
     const newBridge = {
@@ -408,135 +399,15 @@ const Ladders = () => {
     return true;
   };
 
-  const startDrawing = ({ nativeEvent }: any) => {
-    if (data.length < 1) return;
-    setIsDrawing(true);
-    const { offsetX, offsetY } = nativeEvent;
-    console.log(offsetX);
-    console.log(offsetY);
-    const targetIndex = getTargetIndex(offsetX);
-    startTouchPoint.current = { targetIndex, x: offsetX, y: offsetY };
-  };
-
-  const finishDrawing = ({ nativeEvent }: any) => {
-    if (data.length < 1) return;
-    setIsDrawing(false);
-    const { offsetX, offsetY } = nativeEvent;
-    console.log(offsetX);
-    console.log(offsetY);
-    const targetIndex = getTargetIndex(offsetX);
-
-    const _startTouch = startTouchPoint.current;
-    const _endTouch = { targetIndex, x: offsetX, y: offsetY };
-    let startTouch = _startTouch;
-    let endTouch = _endTouch;
-
-    if (_startTouch.targetIndex > _endTouch.targetIndex) {
-      startTouch = _endTouch;
-      endTouch = _startTouch;
-    }
-
-    const startTargetX = data[startTouch.targetIndex][0].x;
-    const maxS = Math.max(startTargetX, endTouch.x, startTouch.x);
-    const minS = Math.min(startTargetX, endTouch.x, startTouch.x);
-    const centerS = center([startTargetX, endTouch.x, startTouch.x]);
-    const xRatioS = (maxS - centerS) / (maxS - minS);
-    const startYLen =
-      startTouch.x - startTargetX >= 0
-        ? (endTouch.y - startTouch.y) / xRatioS
-        : (endTouch.y - startTouch.y) * xRatioS;
-    const startY = endTouch.y - startYLen;
-
-    const endTargetX = data[endTouch.targetIndex][0].x;
-    const maxE = Math.max(endTargetX, endTouch.x, startTouch.x);
-    const minE = Math.min(endTargetX, endTouch.x, startTouch.x);
-    const centerE = center([endTargetX, endTouch.x, startTouch.x]);
-    const xRatioE = (centerE - minE) / (maxE - minE);
-    const endYLen =
-      endTouch.x - endTargetX >= 0
-        ? (endTouch.y - startTouch.y) * xRatioE
-        : (endTouch.y - startTouch.y) / xRatioE;
-    const endY = endYLen + startTouch.y;
-
-    if (
-      startY < 1 ||
-      startY > window.innerHeight ||
-      endY < 1 ||
-      endY > window.innerHeight
-    ) {
-      init();
-      drawBridge();
-      return;
-    }
-
-    if (endTouch.targetIndex - startTouch.targetIndex !== 1) {
-      init();
-      drawBridge();
-      return;
-    }
-    const linkId = new Date().getTime() * Math.random();
-    const newBridge = {
-      startBridge: {
-        targetIndex: startTouch.targetIndex,
-        x: startTargetX,
-        y: startY,
-        linkId,
-        linkIndex: endTouch.targetIndex,
-      },
-      endBridge: {
-        targetIndex: endTouch.targetIndex,
-        x: endTargetX,
-        y: endY,
-        linkId,
-        linkIndex: startTouch.targetIndex,
-      },
-    };
-    setBridgeData((prev: any) => {
-      return [...prev, newBridge];
-    });
-  };
-
-  const drawing = ({ nativeEvent }: any) => {
-    const { offsetX, offsetY } = nativeEvent;
-    if (ctx) {
-      const startTouch = startTouchPoint.current;
-      if (!isDrawing) return;
-
-      init();
-      drawBridge();
-
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(startTouch.x, startTouch.y);
-      ctx.lineTo(offsetX, offsetY);
-      ctx.stroke();
-      ctx.closePath();
-      ctx.restore();
-    }
-  };
-  const clearContext = () => {
-    const canvas: any = canvasRef.current;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    setData([]);
-    setBridgeData([]);
-    setSortedData([]);
-    setApplied(false);
-    console.clear();
-  };
-
   useEffect(() => {
     if (bridgeData.length < 1) return;
     init();
     drawBridge();
-
     const temp = clonedeep(data);
-
     bridgeData.forEach(({ startBridge, endBridge }: any) => {
       temp[startBridge.targetIndex].push(startBridge);
       temp[endBridge.targetIndex].push(endBridge);
     });
-
-    // setSortedData(sort(temp, 'y'));
     setSortedData(sort(temp));
   }, [bridgeData]);
 
@@ -549,7 +420,6 @@ const Ladders = () => {
     let nodeIdx = 0;
     const usedBridge = new Set();
     let breakPoint = 0; // 무한 루프 방지
-
     while (breakPoint < 1000) {
       if (sortedData[currentLine].length === nodeIdx) break;
       const node = sortedData[currentLine][nodeIdx];
@@ -586,7 +456,6 @@ const Ladders = () => {
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       ctx.lineWidth = 5;
-
       ctx.moveTo(path[i].x, path[i].y);
       ctx.lineTo(path[i + 1].x, path[i + 1].y);
       ctx.stroke();
@@ -597,14 +466,11 @@ const Ladders = () => {
 
   const tracePath2 = (idx: any) => {
     if (sortedData.length < 1) return;
-    // init();
-    // drawBridge();
     const path = [];
     let currentLine = idx;
     let nodeIdx = 0;
     const usedBridge = new Set();
     let breakPoint = 0; // 무한 루프 방지
-
     while (breakPoint < 1000) {
       if (sortedData[currentLine].length === nodeIdx) break;
       const node = sortedData[currentLine][nodeIdx];
@@ -632,7 +498,6 @@ const Ladders = () => {
       }
       breakPoint++;
     }
-
     for (let i = 0; i < path.length - 1; i++) {
       ctx.save();
       ctx.beginPath();
@@ -641,7 +506,6 @@ const Ladders = () => {
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       ctx.lineWidth = 5;
-
       ctx.moveTo(path[i].x, path[i].y);
       ctx.lineTo(path[i + 1].x, path[i + 1].y);
       ctx.stroke();
@@ -658,7 +522,6 @@ const Ladders = () => {
 
   const jebiPick = () => {
     inputReset();
-    // console.log(Array.from(prizeRef.current.children));
     Array.from(prizeRef.current.children).forEach((x: any) => (x.value = ''));
     setJebi([]);
     let prompt2: any = prompt('당첨 개수를 정해주세요');
@@ -671,11 +534,9 @@ const Ladders = () => {
             0,
           );
           arr.sort(() => Math.random() - 0.5);
-          console.log(arr);
           let temp = [];
           for (let i = 0; i < +prompt2; i++) {
             let num = arr.shift();
-            console.log(num);
             if (num !== undefined) {
               temp.push(num);
             }
@@ -691,7 +552,6 @@ const Ladders = () => {
   };
 
   const modalOn = (e: any) => {
-    // if (e.target == e.currentTarget)
     setJebi([]);
     setModal(!modal);
   };
@@ -700,10 +560,9 @@ const Ladders = () => {
     let inputArrRef: any = addList.current;
     if (!inputArrRef) return;
     let tempArr = [];
-    for (let i = 0; i < inputArrRef.children.length - 2; i++) {
+    for (let i = 0; i < inputArrRef.children.length - 3; i++) {
       tempArr.push(inputArrRef.children[i].children[0].value);
     }
-    console.log(tempArr);
     setInputArr(tempArr);
     setModal(!modal);
   };
@@ -723,17 +582,6 @@ const Ladders = () => {
     }
   };
 
-  // const inputChange = (e: any) => {
-  //   let copy = inputArr.slice(0);
-  //   console.log(e.key);
-  //   // for (let i = 0; i < copy.length; i++) {
-  //   //   if (i == e.target.key) {
-  //   //     copy[i] == e.target.value;
-  //   //   }
-  //   // }
-  //   setInputArr(copy);
-  // };
-
   const inputReset = () => {
     setInputArr([]);
     setInputs([1]);
@@ -741,17 +589,12 @@ const Ladders = () => {
 
   useEffect(() => {
     if (addList) {
-      console.log(addList.current);
       if (addList.current)
         addList.current.children[
-          addList.current.children.length - 3
+          addList.current.children.length - 4
         ].children[0].focus();
     }
   }, [inputs]);
-
-  // useEffect(()=> {
-  //   fillIn()
-  // }, [data])
 
   return (
     <$Container>
@@ -763,14 +606,13 @@ const Ladders = () => {
             width: '400px',
             height: '400px',
             position: 'absolute',
-            top: '50%',
+            top: '350px',
             left: '50%',
             backgroundColor: 'rgba(0, 0, 0, 0.4)',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             padding: '40px',
-            // justifyContent: 'center',
           }}
           onClick={(e) => modalOn(e)}
         >
@@ -785,10 +627,8 @@ const Ladders = () => {
                 }}
               >
                 <$AddInput
-                  value={inputArr[i]}
-                  placeholder="enter 클릭시 항목추가..."
+                  value={inputArr[i] || ''}
                   onKeyUp={(e) => {
-                    // 다음 input으로 focus 넘기기 추가
                     if (e.key == 'Enter') {
                       if (inputs.length >= users) {
                         alert('유저 수 이상으로 추가할 수 없습니다');
@@ -817,6 +657,18 @@ const Ladders = () => {
               </div>
             );
           })}
+          <$CustomButton2
+            onClick={(e) => {
+              e.stopPropagation();
+              if (inputs.length >= users) {
+                alert('유저 수 이상으로 추가할 수 없습니다');
+                return;
+              }
+              setInputs([...inputs, 1]);
+            }}
+          >
+            추가
+          </$CustomButton2>
           <$CustomButton2 onClick={prizePick}>확인</$CustomButton2>
           <$CustomButton2 onClick={inputReset}>리셋</$CustomButton2>
         </div>
@@ -844,17 +696,15 @@ const Ladders = () => {
           </div>
           {/* <$CustomButton onClick={clearContext}></$CustomButton> */}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <$CustomButton onClick={jebiPick}>당첨정하기</$CustomButton>
-            <$CustomButton onClick={modalOn}>항목정하기</$CustomButton>
+            <$CustomButton onClick={jebiPick}>WINNER-MODE</$CustomButton>
+            <$CustomButton onClick={modalOn}>MATCH-MODE</$CustomButton>
           </div>
         </$ButtonPlace>
       </$UpperPlace>
-      {/* <button onClick={() => result(+users)}>result</button> */}
       <div
         style={{
           display: 'flex',
           justifyContent: 'space-between',
-          // border: '1px solid black',
           marginLeft: ((1 / users) * window.innerWidth * 0.8) / 2,
           marginRight: ((1 / users) * window.innerWidth * 0.8) / 2,
         }}
@@ -878,9 +728,8 @@ const Ladders = () => {
         style={{
           display: 'flex',
           justifyContent: 'space-between',
-          // border: '1px solid black',
-          marginLeft: ((1 / users) * window.innerWidth * 0.6) / 2,
-          marginRight: ((1 / users) * window.innerWidth * 0.6) / 2,
+          marginLeft: ((1 / users) * window.innerWidth * 0.9) / 2,
+          marginRight: ((1 / users) * window.innerWidth * 0.9) / 2,
         }}
       >
         {Array.from({ length: users }, (v, i) => i + 1).map((u, idx) => {
@@ -892,12 +741,11 @@ const Ladders = () => {
               readOnly
             />
           ) : inputArr.length > 0 ? (
-            <$Destination
-              key={Date.now() * u}
-              value={inputArr[idx]}
-              style={{ maxWidth: 43 }}
-              readOnly
-            />
+            <div>
+              {inputArr[idx]?.split('').map((x: any) => {
+                return <div style={{ fontSize: '20px' }}>{x}</div>;
+              })}
+            </div>
           ) : (
             <$Destination
               key={Date.now() * u}

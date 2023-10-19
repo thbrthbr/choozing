@@ -388,7 +388,7 @@ const Tiermaker = () => {
     }
     let res = await axios({
       method: 'POST',
-      url: 'https://port-0-choozing-back-euegqv2blnvs1bf5.sel5.cloudtype.app/img_upload',
+      url: 'http://localhost:8000/img_upload',
       data: formData,
       headers: {
         'Content-Type': 'multipart/form-data',

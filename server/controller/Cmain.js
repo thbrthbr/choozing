@@ -4,7 +4,9 @@ exports.upload = async (req, res) => {
     let files = Array.from(req.files);
     for (let i = 0; i < files.length; i++) {
       let obj = {
-        img: files[i].filename,
+        img:
+          'https://port-0-choozing-back-euegqv2blnvs1bf5.sel5.cloudtype.app/choozing-back/public/' +
+          files[i].filename,
         id: Date.now() + i,
       };
       set.push(obj);

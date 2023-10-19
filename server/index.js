@@ -8,8 +8,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const server = http.createServer(app);
 
-// app.use('/public', express.static(__dirname + '/public'));
-console.log(__dirname);
+app.use('/img_upload', express.static('/public'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 

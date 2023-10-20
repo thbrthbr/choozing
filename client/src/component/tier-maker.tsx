@@ -193,6 +193,7 @@ const Tiermaker = () => {
   // };
 
   const back = (e: any) => {
+    console.log('야호');
     let isExsist = [];
     for (let i = 0; i < imgSet.length; i++) {
       isExsist.push(imgSet[i].id);
@@ -397,6 +398,25 @@ const Tiermaker = () => {
     setImgSet([...res.data.data, ...imgSet]);
   };
 
+  const uploader2 = async (e: any) => {
+    const imageLists = e.target.files;
+    let show: any = [];
+    for (let i = 0; i < imageLists.length; i++) {
+      let reader = new FileReader();
+      reader.onloadend = () => {
+        let obj = {
+          id: Date.now() + Math.random() * 10000,
+          img: reader.result,
+        };
+        show.push(obj);
+      };
+      reader.readAsDataURL(e.target.files[i]);
+    }
+    setTimeout(() => {
+      setImgSet([...show, ...imgSet]);
+    }, 100);
+  };
+
   const sampleShow = () => {
     setImgSet(
       categoryData.map((x, i) => {
@@ -404,6 +424,7 @@ const Tiermaker = () => {
       }),
     );
   };
+
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
 
@@ -453,7 +474,7 @@ const Tiermaker = () => {
         type="file"
         id="img-upload"
         name="img-upload"
-        onChange={uploader}
+        onChange={uploader2}
         multiple
       />
       <h4
@@ -596,7 +617,7 @@ const Tiermaker = () => {
                               );
                               // back(e);
                             }}
-                            onContextMenu={elementSub}
+                            // onContextMenu={elementSub}
                           ></img>
                         );
                       })}
@@ -605,7 +626,17 @@ const Tiermaker = () => {
                 );
               })}
             </div>
-            <$TierThread id={'thread'}>
+            <$TierThread
+              id={'thread'}
+              onDrop={(e) => {
+                // console.log(e.target);
+                back(e);
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
               {imgSet.map((x: any) => {
                 return (
                   <img

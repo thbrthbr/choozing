@@ -13,3 +13,4 @@
 티어메이커 - 여러가지 항목 중에 우선 순위나 가치 순위를 매길 때 용이합니다
 
 상세 기능 설명 링크 : https://www.notion.so/CHOOZING-bbbf55fb6c494e47bc463d0fcf512987?pvs=4
+live demo : https://web-choozing-euegqv2blnvs1bf5.sel5.cloudtype.app/
